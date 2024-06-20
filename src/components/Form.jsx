@@ -1,32 +1,42 @@
 import { useState, useEffect } from 'react'
-import { FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
+const apiUrl = import.meta.env.VITE_BASE_API_URL;
 
-function Form() {
+function Form({ tags, categories, onCreate }) {
 
-    const tagsList = ['html', 'css', 'js', 'php'];
+    //const tagsList = ['html', 'css', 'js', 'php'];
 
-    const [posts, setPosts] = useState([]);
+    //const [posts, setPosts] = useState([]);
 
     const defaultPostData = {
         title: "",
+        slug: "",
         image: "",
         content: "",
         published: false,
-        tags: []
+        tags: [],
+        categoryId: ""
     }
 
     const [postData, setPostData] = useState(defaultPostData);
 
-    const isEmpty = postData.title.trim().length === 0;
+    //const isEmpty = postData.title.trim().length === 0;
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (isEmpty) {
+        /*if (isEmpty) {
             return;
-        }
+        }*/
 
-        setPosts(array => ([...array, postData]));
+        const post = await axios.post(`${apiUrl}/posts`, postData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        console.log(post);
+
+        onCreate();
 
         setPostData(defaultPostData);
     }
@@ -56,6 +66,15 @@ function Form() {
                 </div>
 
                 <div className="form-element">
+                    <label><strong>Slug:</strong></label>
+                    <input
+                        type="text"
+                        value={postData.slug}
+                        onChange={event => changePostData('slug', event.target.value)}
+                    />
+                </div>
+
+                <div className="form-element">
                     <label><strong>Immagine:</strong></label>
                     <input
                         type="text"
@@ -76,23 +95,36 @@ function Form() {
                 <div className="form-element">
                     <ul>
                         <label><strong>Tags:</strong></label>
-                        {tagsList.map((tag, index) => (
+                        {tags.map(({ id, name }, index) => (
                             <li key={index}>
                                 <input
                                     type="checkbox"
-                                    checked={postData.tags.includes(tag)}
+                                    checked={postData.tags.includes(id)}
                                     onChange={() => {
                                         const current = postData.tags
-                                        const newTags = current.includes(tag) ?
-                                            current.filter(element => element !== tag) :
-                                            [...current, tag];
+                                        const newTags = current.includes(id) ?
+                                            current.filter(element => element !== id) :
+                                            [...current, id];
                                         changePostData('tags', newTags)
                                     }}
                                 />
-                                {tag}
+                                {name}
                             </li>
                         ))}
                     </ul>
+                </div>
+
+                <div className="form-element">
+                    <label><strong>Categoria:</strong></label>
+                    <select
+                        name="categoryId"
+                        value={postData.categoryId}
+                        onChange={event => changePostData("categoryId", Number(event.target.value))}
+                    >
+                        {categories.map(category => (
+                            <option key={category.id} value={category.id}>{category.name}</option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="form-element">
@@ -111,7 +143,7 @@ function Form() {
 
             </form>
 
-            <div className="container">
+            {/* <div className="container">
                 {posts.map((post, index) => (
                     <div className={`card ${post.published ? 'published' : ''}`} key={index}>
                         <img src={post.image} alt="" />
@@ -125,8 +157,7 @@ function Form() {
                         <button onClick={() => removePost(index)}><FaTrashAlt /></button>
                     </div>
                 ))}
-
-            </div>
+            </div> */}
 
         </>
     )
