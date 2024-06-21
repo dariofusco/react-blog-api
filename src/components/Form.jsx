@@ -4,30 +4,20 @@ const apiUrl = import.meta.env.VITE_BASE_API_URL;
 
 function Form({ tags, categories, onCreate }) {
 
-    //const tagsList = ['html', 'css', 'js', 'php'];
-
-    //const [posts, setPosts] = useState([]);
-
     const defaultPostData = {
         title: "",
         slug: "",
         image: "",
         content: "",
-        published: false,
+        published: true,
         tags: [],
         categoryId: ""
     }
 
     const [postData, setPostData] = useState(defaultPostData);
 
-    //const isEmpty = postData.title.trim().length === 0;
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        /*if (isEmpty) {
-            return;
-        }*/
 
         const post = await axios.post(`${apiUrl}/posts`, postData, {
             headers: {
@@ -142,22 +132,6 @@ function Form({ tags, categories, onCreate }) {
                 <button>Aggiungi</button>
 
             </form>
-
-            {/* <div className="container">
-                {posts.map((post, index) => (
-                    <div className={`card ${post.published ? 'published' : ''}`} key={index}>
-                        <img src={post.image} alt="" />
-                        <h3>{post.title}</h3>
-                        <p>{post.content}</p>
-                        <div className="badge">
-                            {post.tags.map((tag, index) => (
-                                <span className="tag" key={index}>{tag}</span>
-                            ))}
-                        </div>
-                        <button onClick={() => removePost(index)}><FaTrashAlt /></button>
-                    </div>
-                ))}
-            </div> */}
 
         </>
     )
